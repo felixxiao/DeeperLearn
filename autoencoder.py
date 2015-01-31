@@ -48,21 +48,3 @@ for t in range(epochs):
 pyplot.plot(train_errors, c = 'b')
 pyplot.xlabel("Training epoch")
 pyplot.ylabel("Mean Squared error")
-
-#%%
-"------------------ Benchmarking ---------------------------------------------"
-from sklearn.linear_model import LinearRegression
-from sklearn.neighbors import KNeighborsRegressor
-
-print "Best test error:   ", np.min(test_errors)
-
-print "OLS:               ",
-ols = LinearRegression()
-ols.fit(data[:,:-1], data[:,-1:])
-print np.linalg.norm(ols.predict(test[:,:-1]) - test[:,-1:]) / len(test)
-print "OLS R^2:           ", ols.score(test[:,:-1], test[:,-1:])
-
-print "Nearest Neighbors: ",
-nearest = KNeighborsRegressor(n_neighbors = 20)
-nearest.fit(data[:,:-1], data[:,-1:])
-print np.linalg.norm(nearest.predict(test[:,:-1]) - test[:,-1:]) / len(test)
