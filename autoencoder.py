@@ -9,7 +9,7 @@ import numpy as np
 from matplotlib import pyplot
 from sklearn import preprocessing
 
-"------------------ Data import and preprocessing ----------------------------"
+"------------------ Data import and preprocessing ----------------------"
 addr = "wine.data"
 data = np.genfromtxt(addr, skiprows = 0, delimiter = ',')
 P = data.shape[1] - 1
@@ -19,14 +19,14 @@ data[:,0] = 1.0
 np.random.shuffle(data)
 
 #%%
-"------------------ Learning parameters --------------------------------------"
-M      = 5        # Number of hidden units (excluding bias unit)
+"------------------ Learning parameters --------------------------------"
+M      = 10       # Number of hidden units (excluding bias unit)
 rate   = 0.001    # Descent rate
 epochs = 1000     # Maximum number of passes through the data set
 weight = 0.0      # Higher means more regularized
 
 #%%
-"------------------ Gradient Descent -----------------------------------------"
+"------------------ Gradient Descent -----------------------------------"
 beta  = np.random.rand(P+1, M+1) - 0.5
 alpha = np.random.rand(P+1, M+1) - 0.5
 
@@ -43,8 +43,14 @@ for t in range(epochs):
     beta  -= rate * grad_beta  - weight * beta
     alpha -= rate * grad_alpha - weight * alpha
     
-    train_errors.append(np.linalg.norm(delta) / len(delta))
+    train_errors.append(np.linalg.norm(delta[:,1:])**2 / len(delta))
 
 pyplot.plot(train_errors, c = 'b')
-pyplot.xlabel("Training epoch")
-pyplot.ylabel("Mean Squared error")
+pyplot.xlabel("Training Epoch")
+pyplot.ylabel("Mean Squared Error")
+
+print "Mean squared encoding errors for each feature (0th feature is dummy)"
+print np.linalg.norm(delta, axis = 0)**2 / len(delta)
+print
+print "Activation frequency of each hidden unit (0th unit is bias unit)"
+print np.sum(Z > 0.5, axis = 0) / float(len(Z))
