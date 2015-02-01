@@ -7,6 +7,7 @@ Created on Mon Jan 26 17:41:41 2015
 
 import numpy as np
 from matplotlib import pyplot
+from matplotlib import image
 from sklearn import preprocessing
 
 "------------------ Data import and preprocessing ----------------------"
@@ -32,7 +33,6 @@ beta  = np.random.rand(P+1, M+1) - 0.5
 alpha = np.random.rand(P+1, M+1) - 0.5
 
 train_errors = []
-test_errors = []
 for t in range(epochs):
     Z = 1 / (1.0 + np.exp(- np.dot(data, alpha)))
     Z[:,0] = 1.0    # Bias unit
@@ -40,9 +40,10 @@ for t in range(epochs):
     
     grad_beta = np.dot(delta.T, Z)
     grad_alpha = np.dot(data.T, np.dot(delta, beta) * Z * (1.0 - Z))
+    
     freq = np.mean(Z, axis = 0)
     sparsity = np.dot(data.T, Z * (1.0 - Z)) * \
-        (sparse / freq + (1.0 - sparse) / (1.0 - freq))
+        (- sparse / freq + (1.0 - sparse) / (1.0 - freq))
     
     beta  -= rate * grad_beta
     alpha -= rate * grad_alpha + weight * sparsity / len(data)
@@ -58,3 +59,6 @@ print np.linalg.norm(delta, axis = 0)**2 / len(delta)
 print
 print "Activation frequency of each hidden unit (0th unit is bias unit)"
 print np.sum(Z > 0.5, axis = 0) / float(len(Z))
+print
+print "Mean activations"
+print freq
