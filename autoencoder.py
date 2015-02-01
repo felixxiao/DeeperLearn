@@ -23,7 +23,8 @@ np.random.shuffle(data)
 M      = 10       # Number of hidden units (excluding bias unit)
 rate   = 0.001    # Descent rate
 epochs = 1000     # Maximum number of passes through the data set
-weight = 0.0      # Higher means more regularized
+weight = 0.10     # Higher means larger penalty for non-sparsity
+sparse = 0.05     # Constrain hidden units to fire about this often
 
 #%%
 "------------------ Gradient Descent -----------------------------------"
@@ -39,9 +40,12 @@ for t in range(epochs):
     
     grad_beta = np.dot(delta.T, Z)
     grad_alpha = np.dot(data.T, np.dot(delta, beta) * Z * (1.0 - Z))
+    freq = np.mean(Z, axis = 0)
+    sparsity = np.dot(data.T, Z * (1.0 - Z)) * \
+        (sparse / freq + (1.0 - sparse) / (1.0 - freq))
     
-    beta  -= rate * grad_beta  - weight * beta
-    alpha -= rate * grad_alpha - weight * alpha
+    beta  -= rate * grad_beta
+    alpha -= rate * grad_alpha + weight * sparsity / len(data)
     
     train_errors.append(np.linalg.norm(delta[:,1:])**2 / len(delta))
 
